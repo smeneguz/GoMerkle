@@ -298,9 +298,6 @@ func PrepareMerkleTree[T any](
 		nodeHash = StandardNodeHash
 	}
 
-	// Always use StandardLeafHash to ensure consistency
-	leafHash = StandardLeafHash[T]
-
 	// Create structure to store hashed values
 	hashedValues := make([]struct {
 		Value      T
