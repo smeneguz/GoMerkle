@@ -12,9 +12,9 @@ type MerkleTreeImpl[T any] struct {
 		Value     T
 		TreeIndex int
 	}
-	LeafHash   func(T) HexString    // Function to hash leaves
-	NodeHash   NodeHash             // Function to hash internal nodes
-	HashLookup map[HexString]int    // Maps leaf hashes to value indices
+	LeafHash   func(T) HexString // Function to hash leaves
+	NodeHash   NodeHash          // Function to hash internal nodes
+	HashLookup map[HexString]int // Maps leaf hashes to value indices
 }
 
 // Root returns the root hash of the Merkle tree.

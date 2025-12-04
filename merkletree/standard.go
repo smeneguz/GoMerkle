@@ -67,7 +67,7 @@ func VerifyStandardMerkleTree[T any](root BytesLike, leaf T, proof []BytesLike) 
 // StandardMerkleTreeData represents the exportable data of a Standard Merkle tree.
 // This format can be serialized to JSON for storage or transmission.
 type StandardMerkleTreeData[T any] struct {
-	Format string `json:"format"` // Format version identifier
+	Format string      `json:"format"` // Format version identifier
 	Tree   []HexString `json:"tree"`   // Complete tree structure
 	Values []struct {
 		Value     T   `json:"value"`

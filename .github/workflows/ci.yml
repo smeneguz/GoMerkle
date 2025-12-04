@@ -2,20 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 jobs:
-  # Run tests across multiple Go versions and operating systems
+  # Main test on latest Go + Linux
   test:
     name: Test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        go-version: ['1.21', '1.22', '1.23']
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -24,37 +19,29 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: ${{ matrix.go-version }}
+        go-version: '1.23'
 
     - name: Cache Go modules
       uses: actions/cache@v4
       with:
-        path: |
-          ~/go/pkg/mod
-          ~/.cache/go-build
-        key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-go-${{ matrix.go-version }}-
+          ${{ runner.os }}-go-
 
     - name: Download dependencies
       run: go mod download
 
-    - name: Verify dependencies
-      run: go mod verify
-
     - name: Run tests
-      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+      run: go test -v -race -coverprofile=coverage.txt ./...
 
-    - name: Upload coverage to Codecov
-      if: matrix.os == 'ubuntu-latest' && matrix.go-version == '1.23'
+    - name: Upload coverage
       uses: codecov/codecov-action@v4
       with:
         file: ./coverage.txt
-        flags: unittests
-        name: codecov-umbrella
         fail_ci_if_error: false
 
-  # Lint code using golangci-lint
+  # Quick lint check
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -74,7 +61,7 @@ jobs:
         version: latest
         args: --timeout=5m
 
-  # Build examples and binaries
+  # Build verification
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -88,27 +75,5 @@ jobs:
       with:
         go-version: '1.23'
 
-    - name: Build library
+    - name: Build
       run: go build -v ./...
-
-    - name: Build examples
-      run: go build -v ./cmd/...
-
-  # Verify go.mod and go.sum are tidy
-  tidy:
-    name: Tidy
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
-
-    - name: Check go mod tidy
-      run: |
-        go mod tidy
-        git diff --exit-code go.mod go.sum

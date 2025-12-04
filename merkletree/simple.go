@@ -12,14 +12,14 @@ type SimpleMerkleTree struct {
 
 // SimpleMerkleTreeOptions represents the options for the Simple Merkle tree.
 type SimpleMerkleTreeOptions struct {
-	MerkleTreeOptions        // Include base Merkle tree options
+	MerkleTreeOptions          // Include base Merkle tree options
 	NodeHash          NodeHash // Custom node hash function (optional)
 }
 
 // SimpleMerkleTreeData represents the exportable data of a Simple Merkle tree.
 // This format can be serialized to JSON for storage or transmission.
 type SimpleMerkleTreeData struct {
-	Format string `json:"format"` // Format version identifier
+	Format string      `json:"format"` // Format version identifier
 	Tree   []HexString `json:"tree"`   // Complete tree structure
 	Values []struct {
 		Value     BytesLike `json:"value"`

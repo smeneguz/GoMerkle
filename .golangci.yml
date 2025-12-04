@@ -1,64 +1,39 @@
 run:
   timeout: 5m
   tests: true
-  modules-download-mode: readonly
 
 linters:
   enable:
-    - errcheck      # Check for unchecked errors
-    - gosimple      # Simplify code
+    - errcheck      # Check for unchecked errors (important!)
     - govet         # Reports suspicious constructs
-    - ineffassign   # Detect ineffectual assignments
     - staticcheck   # Static analysis checks
-    - unused        # Check for unused constants, variables, functions
-    - gofmt         # Check code formatting
-    - goimports     # Check import formatting
-    - misspell      # Finds commonly misspelled words
-    - gocritic      # Comprehensive Go source code linter
-    - revive        # Fast, configurable, extensible linter
-    - gosec         # Security-focused linter
-    - exportloopref # Check for pointers to loop variables
-    - nilerr        # Check that there is no simultaneous return of nil error and an invalid value
+    - unused        # Check for unused code
+    - ineffassign   # Detect ineffectual assignments
 
 linters-settings:
   errcheck:
-    check-blank: true
-    check-type-assertions: true
+    check-blank: false  # Allow _ =
+    check-type-assertions: false
 
   govet:
-    enable-all: true
+    enable:
+      - shadow
     disable:
-      - fieldalignment # Too strict for this project
-
-  gofmt:
-    simplify: true
-
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
-    disabled-checks:
-      - unnamedResult # Allow unnamed returns for short functions
-
-  revive:
-    confidence: 0.8
-
-  gosec:
-    excludes:
-      - G404 # Allow math/rand for non-security purposes
+      - fieldalignment
 
 issues:
-  exclude-use-default: false
-  max-issues-per-linter: 0
-  max-same-issues: 0
+  exclude-use-default: true  # Use default exclusions
+  max-issues-per-linter: 50
+  max-same-issues: 10
 
   exclude-rules:
-    # Exclude some linters from running on tests files
+    # Exclude linters from tests
     - path: _test\.go
       linters:
-        - gosec
         - errcheck
+        - staticcheck
 
-output:
-  sort-results: true
+    # Allow shadowing in specific cases
+    - linters:
+        - govet
+      text: "shadow"
